@@ -1,0 +1,6 @@
+/exp/icarus/app/users/dkoh/dev/spine/cafana/CMakeFiles/example.dir
+/exp/icarus/app/users/dkoh/dev/spine/cafana/CMakeFiles/muon2024.dir
+/exp/icarus/app/users/dkoh/dev/spine/cafana/CMakeFiles/nue2025.dir
+/exp/icarus/app/users/dkoh/dev/spine/cafana/CMakeFiles/spine_benchmark.dir
+/exp/icarus/app/users/dkoh/dev/spine/cafana/CMakeFiles/edit_cache.dir
+/exp/icarus/app/users/dkoh/dev/spine/cafana/CMakeFiles/rebuild_cache.dir

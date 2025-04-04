@@ -70,6 +70,9 @@ target_link_libraries(example PRIVATE common)
 add_executable(muon2024 muon2024.cc)
 target_link_libraries(muon2024 PRIVATE common)
 
+add_executable(nue2025 nue2025.cc)
+target_link_libraries(nue2025 PRIVATE common)
+
 add_executable(spine_benchmark spine_benchmark.cc)
 target_link_libraries(spine_benchmark PRIVATE common)
 

@@ -81,6 +81,42 @@ namespace utilities
             }
             return index;
         }
+    
+    /**
+     * @brief Finds the index corresponding to the leading primary particle of the
+     * specifed particle type.
+     * @details The leading primary particle is defined as the primary particle
+     * with the highest kinetic energy. If the interaction is a true interaction,
+     * the initial kinetic energy is used instead of the CSDA kinetic energy.
+     * @tparam T the type of interaction (true or reco).
+     * @param obj the interaction to operate on.
+     * @param pid of the particle type.
+     * @return the index of the leading primary particle (highest KE).
+     */
+    template <class T>
+        size_t leading_primary_particle_index(const T & obj, uint16_t pid)
+        {
+            double leading_ke(0);
+            size_t index(0);
+            size_t counts(0);
+            for(size_t i(0); i < obj.particles.size(); ++i)
+            {
+                const auto & p = obj.particles[i];
+                double energy(p.csda_ke);
+                if (p.is_primary) ++counts;
+                if constexpr (std::is_same_v<T, caf::SRInteractionTruthDLPProxy>)
+                    energy = pvars::ke(p);
+                if(PIDFUNC(p) == pid && (p.is_primary) && energy > leading_ke)
+                {
+                    leading_ke = energy;
+                    index = i;
+                }
+            }
+            if (counts > 0)
+                return index;
+            else
+                return leading_particle_index(obj, pid);
+        }
 
     /**
      * @brief Finds the index corresponding to the leading muon.
@@ -110,6 +146,90 @@ namespace utilities
         size_t leading_proton_index(const T & obj)
         {
             return leading_particle_index(obj, 4);
+        }
+
+    /**
+     * @brief Finds the index corresponding to the leading primary electron.
+     * @details The leading muon is defined as the muon with the highest
+     * kinetic energy. If the interaction is a true interaction, the initial
+     * kinetic energy is used instead of the CSDA kinetic energy.
+     * @tparam T the type of interaction (true or reco).
+     * @param obj the interaction to operate on.
+     * @return the index of the leading muon (highest KE).
+     */
+    template<class T>
+        size_t leading_primary_electron_index(const T & obj)
+        {
+            return leading_primary_particle_index(obj, 1);
+        }
+
+    /**
+     * @brief Finds the index corresponding to the leading primary proton.
+     * @details The leading muon is defined as the muon with the highest
+     * kinetic energy. If the interaction is a true interaction, the initial
+     * kinetic energy is used instead of the CSDA kinetic energy.
+     * @tparam T the type of interaction (true or reco).
+     * @param obj the interaction to operate on.
+     * @return the index of the leading muon (highest KE).
+     */
+    template<class T>
+        size_t leading_primary_proton_index(const T & obj)
+        {
+            return leading_primary_particle_index(obj, 4);
+        }
+
+    template <class T>
+        size_t leading_shower_index(const T & obj)
+        {
+            double leading_ke(0);
+            size_t index(0);
+            for(size_t i(0); i < obj.particles.size(); ++i)
+            {
+                const auto & p = obj.particles[i];
+                double energy(p.csda_ke);
+                if constexpr (std::is_same_v<T, caf::SRInteractionTruthDLPProxy>)
+                    energy = pvars::ke(p);
+                if(SHAPEFUNC(p) == 0 && energy > leading_ke)
+                {
+                    leading_ke = energy;
+                    index = i;
+                }
+            }
+            return index;
+        }
+
+    /**
+     * @brief Finds the index corresponding to the leading shower.
+     * @details The leading shower is defined as the shower with the highest
+     * kinetic energy. If the interaction is a true interaction, the initial
+     * kinetic energy is used instead of the calorimetric kinetic energy.
+     * @tparam T the type of interaction (true or reco).
+     * @param obj the interaction to operate on.
+     * @return the index of the leading shower (highest KE).
+     */
+    template<class T>
+        size_t leading_primary_shower_index(const T & obj)
+        {
+            double leading_ke(0);
+            size_t index(0);
+            size_t counts(0);
+            for(size_t i(0); i < obj.particles.size(); ++i)
+            {
+                const auto & p = obj.particles[i];
+                double energy(p.csda_ke);
+                if (p.is_primary) ++counts;
+                if constexpr (std::is_same_v<T, caf::SRInteractionTruthDLPProxy>)
+                    energy = pvars::ke(p);
+                if(SHAPEFUNC(p) == 0 && (p.is_primary) && energy > leading_ke)
+                {
+                    leading_ke = energy;
+                    index = i;
+                }
+            }
+            if (counts > 0)
+                return index;
+            else
+                return leading_shower_index(obj);
         }
 }
 #endif // UTILITIES_H

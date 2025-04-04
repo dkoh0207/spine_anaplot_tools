@@ -85,6 +85,22 @@ namespace pvars
         {
             return p.pid;
         }
+    
+    /** 
+     * @brief Variable for the particle's shape.
+     * @details This variable returns the shape of the particle. The shape is
+     * determined by the softmax scores of the particle. This function uses the
+     * "nominal" shape decision that is made upstream in the SPINE
+     * reconstruction.
+     * @tparam T the type of particle (true or reco).
+     * @param p the particle to apply the variable on.
+     * @return the shape of the particle.
+     */
+    template<class T>
+        double shape(const T & p)
+        {
+            return p.shape;
+        }
 
     /**
      * @brief Variable for assigning PID based on the particle's softmax scores.
