@@ -52,6 +52,26 @@ namespace utilities
         }
 
     /**
+     * @brief Count the primaries of the interaction with cuts 
+     * (nue specific) applied to each particle.
+     * @tparam T the type of interaction (true or reco).
+     * @param obj the interaction to find the topology of.
+     * @return the count of primaries of each particle type within the
+     * interaction.
+     */
+    template<class T>
+        std::vector<uint32_t> count_primaries_nue(const T & obj)
+        {
+            std::vector<uint32_t> counts(5, 0);
+            for(auto &p : obj.particles)
+            {
+                if(pcuts::final_state_signal_nue(p))
+                    ++counts[PIDFUNC(p)];
+            }
+            return counts;
+        }
+
+    /**
      * @brief Finds the index corresponding to the leading particle of the specifed
      * particle type.
      * @details The leading particle is defined as the particle with the highest
@@ -217,13 +237,13 @@ namespace utilities
             {
                 const auto & p = obj.particles[i];
                 double energy(p.csda_ke);
-                if (p.is_primary) ++counts;
                 if constexpr (std::is_same_v<T, caf::SRInteractionTruthDLPProxy>)
                     energy = pvars::ke(p);
                 if(SHAPEFUNC(p) == 0 && (p.is_primary) && energy > leading_ke)
                 {
                     leading_ke = energy;
                     index = i;
+                    counts++;
                 }
             }
             if (counts > 0)

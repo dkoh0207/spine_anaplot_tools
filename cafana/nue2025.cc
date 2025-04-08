@@ -15,11 +15,11 @@
 #define BEAM_IS_NUMI false
 #define WRITE_PURITY_TREES false
 
-#define SHOWER_DEDX_CUT_VAL 5.23
-#define SHOWER_VERTEX_DISTANCE_CUT_VAL 5.23
-#define SHOWER_DIRECTIONAL_SPREAD_CUT_VAL 0.08
-#define SHOWER_AXIAL_SPREAD_CUT_VAL 0.26
-#define SHOWER_START_STRAIGHTNESS_CUT_VAL 0.89
+#define SHOWER_DEDX_CUT_VAL 4.72
+#define SHOWER_VERTEX_DISTANCE_CUT_VAL 3.27
+#define SHOWER_DIRECTIONAL_SPREAD_CUT_VAL 0.045
+#define SHOWER_AXIAL_SPREAD_CUT_VAL 0.27
+#define SHOWER_START_STRAIGHTNESS_CUT_VAL 0.82
 
 #include "include/mctruth.h"
 #include "include/variables.h"
@@ -59,7 +59,7 @@ int main()
      * AddLoader function is used to create a directory in the output ROOT file
      * to store the results of the analysis.
      */
-    ana::SpectrumLoader mc("/pnfs/icarus/scratch/users/mueller/test/nominal_refactor/flat/input*.flat.root");
+    ana::SpectrumLoader mc("/pnfs/icarus/scratch/users/mueller/test/nominal_mixed5v4/flat/input*.flat.root");
     analysis.AddLoader("mc", &mc, true);
 
     /**
@@ -69,7 +69,7 @@ int main()
      * to calculate the variables. These names are used in the TTree that is
      * created by the Tree class to store the results of the analysis.
      */
-    #define CUT cuts::nue::complete_1eNp_cut
+    #define CUT cuts::nue::all_1eNp_cut
     #define TCUT cuts::neutrino
     std::map<std::string, ana::SpillMultiVar> vars_selected_nu;
     vars_selected_nu.insert({"nu_id", SpineVar<TTYPE,RTYPE>(&vars::neutrino_id, &CUT, &TCUT)});

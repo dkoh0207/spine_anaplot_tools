@@ -66,6 +66,29 @@ namespace pcuts
         }
 
     /**
+     * @brief Check if the particle meets nue final state signal requirements.
+     * @details must be primary and have an energy above threshold.
+     * Electrons must have a ke at least 50 MeV, protons
+     * must have an energy above 50 MeV, and all other particles must have
+     * an energy above 25 MeV.
+     * @tparam T the type of particle (true or reco).
+     * @param p the particle to check.
+     * @return true if the particle is a final state signal particle.
+     */
+    template<class T>
+        bool final_state_signal_nue(const T & p)
+        {
+            bool passes(false);
+            if(is_primary(p))
+            {
+                double energy(pvars::ke(p));
+                if((PIDFUNC(p) == 1 && energy > 50) || (PIDFUNC(p) != 1 && PIDFUNC(p) < 4 && energy > 25) || (PIDFUNC(p) == 4 && energy > 50))
+                    passes = true;
+            }
+            return passes;
+        }
+
+    /**
      * @brief Check if the particle is throughgoing.
      * @details This function checks if the particle is throughgoing. A
      * throughgoing particle is defined as a particle which has both ends

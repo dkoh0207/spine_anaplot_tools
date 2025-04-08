@@ -1,0 +1,94 @@
+[[style]]
+name = 'basic'
+style_sheet = "/exp/icarus/app/users/lkashur/SPINEAna/spine_anaplot_tools/spineplot/quick/CC/pi0ana.mplstyle"
+markers = ['o', '^', 's', 'P', 'D']
+default_figsize = [8,6]
+title = ''
+mark_pot = true
+mark_pot_horizontal = true
+mark_preliminary = 'ICARUS Work-in-Progress'
+plot_kwargs = {'histtype' = 'barstacked', 'stacked' = true}
+
+#[[systematic_recipe]]
+#name = 'detsys'
+#label = 'Detector Systematics'
+#pattern = 'var0(1|3|6|7|8)+'
+
+[[systematic_recipe]]
+name = 'flux'
+label = 'Flux Systematics'
+#pattern = '_Flux'
+pattern = '\\b\\w*_Flux\\b'
+
+[[systematic_recipe]]
+name = 'xsec'
+label = 'Interaction Systematics'
+#pattern = '\\bGENIEReWeight_SBN_v1_multisim_\\w+\\b'
+pattern = 'GENIEReWeight_SBN_v1_multisim'
+
+[[systematic_recipe]]
+name = 'stats'
+label = 'Statistical Uncertainty'
+pattern = '(mc|offbeam)_statistical'
+
+[[systematic_recipe]]
+name = 'all'
+label = 'Total MC Uncertainty'
+pattern = '(flux|xsec|stats)'
+#pattern = '(detsys|flux|xsec|stats)'
+
+[samples.mc]
+key = "mc"
+exposure_type = "pot"
+trees = ['SelectedNu_PhaseCuts',]
+#systematics = ['variationTree', 'multisimTree']
+systematics = ['multisimTree']
+#override_exposure = 1.812e20
+
+[samples.onbeam]
+key = "onbeam"
+exposure_type = "pot"
+override_category = -100
+trees = ['SelectedNu_PhaseCuts',]
+
+[samples.offbeam]
+key = "offbeam"
+exposure_type = "livetime"
+override_category = -1
+trees = ['SelectedCos_PhaseCuts',]
+
+[output]
+path = './'
+
+[analysis]
+ordinate_sample = 'onbeam'
+category_branch = 'category_topology'
+category_assignment = [[0], [1], [2], [3], [4], [5], [6], [-1,7], [-100]]
+category_labels = ['1$\mu$0$\pi^{±}$1$\pi^{0}$', '1$\mu$0$\pi^{±}$1$\pi^{0}$ (OOPS)', '1$\mu$N$\pi^{±}$1$\pi^{0}$', '1$\mu$N$\pi^{±}$0$\pi^{0}$', '1$\mu$N$\pi^{0}$', 'NC 1$\pi^{0}$ ', 'Other $\nu$', 'Cosmic', 'Data']
+category_colors = ['#1b9e77', '#dea0fd', '#4c78a8', '#e5c494', '#e45756', '#17becf', '#f58518', '#a6761d', 'black']
+category_types = ['histogram', 'histogram', 'histogram', 'histogram', 'histogram', 'histogram', 'histogram', 'histogram', 'scatter']
+
+#[variables.pi0_mass]
+#key = "pi0_mass"
+#range = [0, 400]
+#nbins = 40
+#binning_scheme = "equal_width"
+#xlabel = 'Reconstructed Neutral Pion Mass [MeV/c$^{2}$]'
+
+[variables.muon_beam_costheta]
+key = 'muon_beam_costheta'
+range = [-1, 1]
+nbins = 20
+binning_scheme = 'equal_width'
+xlabel = 'Reconstructed $\cos(\theta_{\mu})$'
+
+[[figure]]
+name = 'pi0_mass'
+type = 'SimpleFigure'
+style = 'basic'
+title = 'Selected $\nu_{\mu}$ CC $\pi^{0}$'
+[[figure.artists]]
+type = 'SpineSpectra1D'
+variable = 'pi0_mass'
+#yrange = [0, 500]
+draw_kwargs = {'show_component_number' = true, 'show_component_percentage' = true, 'invert_stack_order' = true, 'draw_error' = 'all'}
