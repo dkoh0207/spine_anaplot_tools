@@ -15,9 +15,9 @@
 #define BEAM_IS_NUMI false
 #define WRITE_PURITY_TREES false
 
-#define SHOWER_DEDX_CUT_VAL 4.72
+#define SHOWER_DEDX_CUT_VAL 3.72
 #define SHOWER_VERTEX_DISTANCE_CUT_VAL 3.27
-#define SHOWER_DIRECTIONAL_SPREAD_CUT_VAL 0.045
+#define SHOWER_DIRECTIONAL_SPREAD_CUT_VAL 0.03
 #define SHOWER_AXIAL_SPREAD_CUT_VAL 0.27
 #define SHOWER_START_STRAIGHTNESS_CUT_VAL 0.82
 
@@ -48,7 +48,7 @@ int main()
      * and therefore the name of the output file, is specified as an argument
      * to the constructor.
      */
-    ana::Analysis analysis("nue2025");
+    ana::Analysis analysis("nue2025_nominal");
 
     /**
      * @brief Add samples to the analysis.
@@ -59,8 +59,14 @@ int main()
      * AddLoader function is used to create a directory in the output ROOT file
      * to store the results of the analysis.
      */
-    ana::SpectrumLoader mc("/pnfs/icarus/scratch/users/mueller/test/nominal_mixed5v4/flat/input*.flat.root");
-    analysis.AddLoader("mc", &mc, true);
+    // ana::SpectrumLoader mc("/pnfs/icarus/scratch/users/mueller/production/simulation/nominal/flat/input*.flat.root");
+    // analysis.AddLoader("mc", &mc, true);
+
+    ana::SpectrumLoader nominal("/pnfs/icarus/persistent/users/mueller/mixed/simulation/nominal/input*.flat.root");
+    analysis.AddLoader("nominal", &nominal, true);
+
+    // ana::SpectrumLoader var01("/pnfs/icarus/scratch/users/mueller/production/simulation/var01/flat/input*.flat.root");
+    // analysis.AddLoader("var01", &var01, true);
 
     /**
      * @brief Add a set of variables for selected interactions to the analysis.
@@ -69,7 +75,7 @@ int main()
      * to calculate the variables. These names are used in the TTree that is
      * created by the Tree class to store the results of the analysis.
      */
-    #define CUT cuts::nue::all_1eNp_cut
+    #define CUT cuts::nue::complete_1eNp_cut
     #define TCUT cuts::neutrino
     std::map<std::string, ana::SpillMultiVar> vars_selected_nu;
     vars_selected_nu.insert({"nu_id", SpineVar<TTYPE,RTYPE>(&vars::neutrino_id, &CUT, &TCUT)});
@@ -284,10 +290,12 @@ int main()
     vars_purity_nu.insert({"fiducial_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::fiducial_cut), &cuts::no_cut, &TCUT)});
     vars_purity_nu.insert({"containment_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::containment_cut), &cuts::no_cut, &TCUT)});
     vars_purity_nu.insert({"flash_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::flash_cut), &cuts::no_cut, &TCUT)});
-    // vars_purity_nu.insert({"has_no_charged_pions", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::no_charged_pions), &cuts::no_cut, &TCUT)});
-    // vars_purity_nu.insert({"has_no_showers", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::no_showers), &cuts::no_cut, &TCUT)});
-    // vars_purity_nu.insert({"has_single_muon", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::has_single_muon), &cuts::no_cut, &TCUT)});
-    // vars_purity_nu.insert({"has_multiple_protons", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::has_nonzero_protons), &cuts::no_cut, &TCUT)});
+    vars_purity_nu.insert({"topological_1eNp_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::nue::topological_1eNp_cut), &cuts::no_cut, &TCUT)});
+    vars_purity_nu.insert({"dedx_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::nue::shower_dedx_cut), &cuts::no_cut, &TCUT)});
+    vars_purity_nu.insert({"vertex_distance_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::nue::shower_vertex_distance_cut), &cuts::no_cut, &TCUT)});
+    vars_purity_nu.insert({"directional_spread_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::nue::shower_directional_spread_cut), &cuts::no_cut, &TCUT)});
+    vars_purity_nu.insert({"axial_spread_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::nue::shower_axial_spread_cut), &cuts::no_cut, &TCUT)});
+    vars_purity_nu.insert({"start_straightness_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::nue::shower_start_straightness_cut), &cuts::no_cut, &TCUT)});
 
     if constexpr(WRITE_PURITY_TREES)
         analysis.AddTree("purityNu", vars_purity_nu, false);
@@ -341,10 +349,12 @@ int main()
     vars_purity_cos.insert({"fiducial_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::fiducial_cut), &cuts::no_cut, &TCUT)});
     vars_purity_cos.insert({"containment_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::containment_cut), &cuts::no_cut, &TCUT)});
     vars_purity_cos.insert({"flash_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::flash_cut), &cuts::no_cut, &TCUT)});
-    // vars_purity_cos.insert({"has_no_charged_pions", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::no_charged_pions), &cuts::no_cut, &TCUT)});
-    // vars_purity_cos.insert({"has_no_showers", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::no_showers), &cuts::no_cut, &TCUT)});
-    // vars_purity_cos.insert({"has_single_muon", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::has_single_muon), &cuts::no_cut, &TCUT)});
-    // vars_purity_cos.insert({"has_multiple_protons", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::has_nonzero_protons), &cuts::no_cut, &TCUT)});
+    vars_purity_cos.insert({"topological_1eNp_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::nue::topological_1eNp_cut), &cuts::no_cut, &TCUT)});
+    vars_purity_cos.insert({"dedx_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::nue::shower_dedx_cut), &cuts::no_cut, &TCUT)});
+    vars_purity_cos.insert({"vertex_distance_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::nue::shower_vertex_distance_cut), &cuts::no_cut, &TCUT)});
+    vars_purity_cos.insert({"directional_spread_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::nue::shower_directional_spread_cut), &cuts::no_cut, &TCUT)});
+    vars_purity_cos.insert({"axial_spread_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::nue::shower_axial_spread_cut), &cuts::no_cut, &TCUT)});
+    vars_purity_cos.insert({"start_straightness_cut", SpineVar<RTYPE,RTYPE>(WRAP_BOOL(cuts::nue::shower_start_straightness_cut), &cuts::no_cut, &TCUT)});
 
     if constexpr(WRITE_PURITY_TREES)
         analysis.AddTree("purityCos", vars_purity_cos, false);
@@ -409,10 +419,12 @@ int main()
     vars_signal.insert({"fiducial_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::fiducial_cut), &SIGCUT, &SIGCUT)});
     vars_signal.insert({"containment_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::containment_cut), &SIGCUT, &SIGCUT)});
     vars_signal.insert({"flash_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::flash_cut), &SIGCUT, &SIGCUT)});
-    // vars_signal.insert({"has_no_charged_pions", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::no_charged_pions), &SIGCUT, &SIGCUT)});
-    // vars_signal.insert({"has_no_showers", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::no_showers), &SIGCUT, &SIGCUT)});
-    // vars_signal.insert({"has_single_muon", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::has_single_muon), &SIGCUT, &SIGCUT)});
-    // vars_signal.insert({"has_multiple_protons", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::has_nonzero_protons), &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"topological_1eNp_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::nue::topological_1eNp_cut), &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"dedx_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::nue::shower_dedx_cut), &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"vertex_distance_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::nue::shower_vertex_distance_cut), &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"directional_spread_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::nue::shower_directional_spread_cut), &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"axial_spread_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::nue::shower_axial_spread_cut), &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"start_straightness_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::nue::shower_start_straightness_cut), &SIGCUT, &SIGCUT)});
     
     analysis.AddTree("signal", vars_signal, true);
 

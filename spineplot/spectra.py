@@ -213,7 +213,6 @@ class SpineSpectra(SpineArtist):
             b = np.sum(data) / len(data)
             initial_guess = [cb_alpha, cb_n, cb_mean, cb_sigma, np.sum(cb_norm), m, b]
             popt, pcov = curve_fit(self.crystal_ball_mxb, bin_centers, data, p0=initial_guess)
-            print(popt)
 
             # Label with estimated parameters and +/- 1 sigma
             cb_label = f'Crystal Ball Fit\n'

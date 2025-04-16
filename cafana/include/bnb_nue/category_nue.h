@@ -29,6 +29,7 @@ namespace category::nue
         else if(cuts::nue::is_numu_cc(obj)) cat = 3;
         else if(cuts::nue::is_numu_nc(obj)) cat = 4;
         else if(cuts::cosmic(obj)) cat = 5;
+        else cat = 6;
         return cat;
     }
 }

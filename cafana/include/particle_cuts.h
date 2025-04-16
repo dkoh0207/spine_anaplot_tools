@@ -9,6 +9,11 @@
 */
 #ifndef PARTICLE_CUTS_H
 #define PARTICLE_CUTS_H
+
+#define PROTON_ENERGY_THRESHOLD 50.0
+#define ELECTRON_ENERGY_THRESHOLD 200.0
+#define DEFAULT_ENERGY_THRESHOLD 25.0
+
 #include <vector>
 #include <numeric>
 #include <cmath>
@@ -59,7 +64,7 @@ namespace pcuts
             if(is_primary(p))
             {
                 double energy(pvars::ke(p));
-                if((PIDFUNC(p) == 2 && energy > 143.425) || (PIDFUNC(p) != 2 && PIDFUNC(p) < 4 && energy > 25) || (PIDFUNC(p) == 4 && energy > 50))
+                if((PIDFUNC(p) == 2 && energy > 143.425) || (PIDFUNC(p) != 2 && PIDFUNC(p) < 4 && energy > DEFAULT_ENERGY_THRESHOLD) || (PIDFUNC(p) == 4 && energy > PROTON_ENERGY_THRESHOLD))
                     passes = true;
             }
             return passes;
@@ -82,8 +87,18 @@ namespace pcuts
             if(is_primary(p))
             {
                 double energy(pvars::ke(p));
-                if((PIDFUNC(p) == 1 && energy > 50) || (PIDFUNC(p) != 1 && PIDFUNC(p) < 4 && energy > 25) || (PIDFUNC(p) == 4 && energy > 50))
-                    passes = true;
+                if (PIDFUNC(p) == 1) 
+                {
+                    if (energy > ELECTRON_ENERGY_THRESHOLD) passes = true;
+                }
+                else if (PIDFUNC(p) == 4) 
+                {
+                    if (energy > PROTON_ENERGY_THRESHOLD) passes = true;
+                }
+                else 
+                {
+                    if (energy > DEFAULT_ENERGY_THRESHOLD) passes = true;
+                }
             }
             return passes;
         }

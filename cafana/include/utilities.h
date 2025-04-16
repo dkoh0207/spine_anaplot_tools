@@ -90,7 +90,7 @@ namespace utilities
             for(size_t i(0); i < obj.particles.size(); ++i)
             {
                 const auto & p = obj.particles[i];
-                double energy(p.csda_ke);
+                double energy(p.ke);
                 if constexpr (std::is_same_v<T, caf::SRInteractionTruthDLPProxy>)
                     energy = pvars::ke(p);
                 if(PIDFUNC(p) == pid && energy > leading_ke)
@@ -122,11 +122,11 @@ namespace utilities
             for(size_t i(0); i < obj.particles.size(); ++i)
             {
                 const auto & p = obj.particles[i];
-                double energy(p.csda_ke);
-                if (p.is_primary) ++counts;
+                double energy(p.ke);
+                if (pcuts::is_primary(p)) ++counts;
                 if constexpr (std::is_same_v<T, caf::SRInteractionTruthDLPProxy>)
                     energy = pvars::ke(p);
-                if(PIDFUNC(p) == pid && (p.is_primary) && energy > leading_ke)
+                if(PIDFUNC(p) == pid && (pcuts::is_primary(p)) && energy > leading_ke)
                 {
                     leading_ke = energy;
                     index = i;
@@ -206,7 +206,7 @@ namespace utilities
             for(size_t i(0); i < obj.particles.size(); ++i)
             {
                 const auto & p = obj.particles[i];
-                double energy(p.csda_ke);
+                double energy(p.ke);
                 if constexpr (std::is_same_v<T, caf::SRInteractionTruthDLPProxy>)
                     energy = pvars::ke(p);
                 if(SHAPEFUNC(p) == 0 && energy > leading_ke)
@@ -236,10 +236,10 @@ namespace utilities
             for(size_t i(0); i < obj.particles.size(); ++i)
             {
                 const auto & p = obj.particles[i];
-                double energy(p.csda_ke);
+                double energy(p.ke);
                 if constexpr (std::is_same_v<T, caf::SRInteractionTruthDLPProxy>)
                     energy = pvars::ke(p);
-                if(SHAPEFUNC(p) == 0 && (p.is_primary) && energy > leading_ke)
+                if(SHAPEFUNC(p) == 0 && (pcuts::is_primary(p)) && energy > leading_ke)
                 {
                     leading_ke = energy;
                     index = i;

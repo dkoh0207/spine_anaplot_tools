@@ -256,9 +256,9 @@ class Sample:
             self._systematics[syst._name] = syst
         
         # Print the systematics for the sample (if requested).
-        if self._print_sys:
-            for sysname, syst in self._systematics.items():
-                print(syst)
+        # if self._print_sys:
+        #     for sysname, syst in self._systematics.items():
+        #         print(syst)
 
     def register_variable(self, variable, categories) -> None:
         """
