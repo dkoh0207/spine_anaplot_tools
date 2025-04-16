@@ -270,7 +270,7 @@ class SpineSpectra2D(SpineSpectra):
             colors = [self._colors[label] for label in labels]
             bincenters = [self._binedges_diagonal[l][:-1] + np.diff(self._binedges_diagonal[l]) / 2 for l in labels]
 
-            ax.hist(bincenters, weights=data, bins=self._variables[0]._nbins,
+            _ = ax.hist(bincenters, weights=data, bins=self._variables[0]._nbins,
                     range=(-1,1) if self._xrange is None else self._xrange,
                     histtype='barstacked', label=labels, color=colors, stacked=True)
             ax.set_xlabel('(Y-X)/X' if self._xtitle is None else self._xtitle)

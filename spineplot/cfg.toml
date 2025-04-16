@@ -1,0 +1,34 @@
+
+[[this_includes]]
+file = 'configurations/common/variables_nue.toml'
+
+[[this_includes]]
+file = 'configurations/common/styles.toml'
+
+[samples]
+[samples.mc]
+key = "mc"
+exposure_type = "pot"
+trees = ['selectedNu', 'selectedCos']
+
+[output]
+path = './'
+
+[analysis]
+ordinate_sample = 'mc'
+category_branch = 'category'
+category_assignment = [[0], [1], [2], [3], [4], [5]]
+category_labels = ['$\nu_e$ 1eNp', '$\nu_e$ CC', '$\nu_e$ NC', '$\nu_\mu$ CC', '$\nu_\mu$ NC', 'Cosmic']
+category_colors = ['C0', 'C1', 'C3', 'C4', 'C5', 'black']
+category_types = ['histogram', 'histogram', 'histogram', 'histogram', 'histogram', 'histogram']
+
+[[figure]]
+name = 'true_edep'
+type = 'SimpleFigure' 
+style = 'selected_icarus_nue'
+[[figure.artists]]
+type = 'SpineSpectra1D'
+yrange = [0, 35]
+variable = 'reco_visible_energy'
+draw_kwargs = {'show_component_number' = true, 'show_component_percentage' = true, 'invert_stack_order' = false}
+
