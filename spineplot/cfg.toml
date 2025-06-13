@@ -2,33 +2,135 @@
 [[this_includes]]
 file = 'configurations/common/variables_nue.toml'
 
-[[this_includes]]
-file = 'configurations/common/styles.toml'
+[[style]]
+name = 'basic'
+style_sheet = "styles/muon2024.mplstyle"
+markers = ['o', '^', 's', 'P', 'D']
+default_figsize = [8,6]
+title = ''
+mark_pot = true
+mark_pot_horizontal = true
+mark_preliminary = '$\bf{ICARUS}$ Work-in-Progress'
+plot_kwargs = {'histtype' = 'barstacked', 'stacked' = true}
 
 [samples]
-[samples.mc]
-key = "mc"
+[samples.nominal]
+key = "nominal"
 exposure_type = "pot"
 trees = ['selectedNu', 'selectedCos']
+systematics = ['variationTree', 'multisimTree']
+presel = "matches_energy == 1"
+print_sys = "False"
+
+[samples.onbeam]
+key = "onbeam"
+exposure_type = "pot"
+override_category = -100
+trees = ['selectedNu',]
+
+# [samples.offbeam]
+# key = "offbeam"
+# exposure_type = "livetime"
+# override_category = 5
+# trees = ['selectedCos',]
+
+[[systematic_recipe]]
+name = 'detsys'
+label = 'Detector Systematics'
+pattern = 'var(01|02|03|04|05|06|07|08|09|10)+'
+
+[[systematic_recipe]]
+name = 'flux'
+label = 'Flux Systematics'
+pattern = '\b\w*_Flux\b'
+
+[[systematic_recipe]]
+name = 'xsec'
+label = 'Interaction Systematics'
+pattern = '\bGENIEReWeight_SBN_v1_multisim_\w+\b'
+
+[[systematic_recipe]]
+name = 'stats'
+label = 'Statistical Uncertainty'
+pattern = '(nominal|offbeam)_statistical'
+
+[[systematic_recipe]]
+name = 'all'
+label = 'Total MC Uncertainty'
+pattern = '(flux|xsec|stats|detsys)'
+
+[[systematic_recipe]]
+name = 'var00_'
+label = 'Detsys Null'
+pattern = 'var00'
+
+[[systematic_recipe]]
+name = 'var01_'
+label = 'Detsys High Lifetime'
+pattern = 'var01'
+
+[[systematic_recipe]]
+name = 'var02_'
+label = 'Detsys Low Lifetime'
+pattern = 'var02'
+
+[[systematic_recipe]]
+name = 'var03_'
+label = 'Detsys Inc/Dec Induction1 Gain'
+pattern = 'var03+'
+
+[[systematic_recipe]]
+name = 'var04_'
+label = 'Detsys Induction 1 Gap'
+pattern = 'var04'
+
+[[systematic_recipe]]
+name = 'var05_'
+label = 'Detsys Ellipsoidal Recombination'
+pattern = 'var05'
+
+[[systematic_recipe]]
+name = 'var06_'
+label = 'Detsys PMT Decreased QE'
+pattern = 'var06'
+
+[[systematic_recipe]]
+name = 'var07_'
+label = 'Detsys YZ Non-uniformity'
+pattern = 'var07'
+
+[[systematic_recipe]]
+name = 'var08_'
+label = 'Detsys Cathode Bending'
+pattern = 'var08'
+
+[[systematic_recipe]]
+name = 'var09_'
+label = 'Detsys TPC Intrinsic Noise'
+pattern = 'var09+'
+
+[[systematic_recipe]]
+name = 'var10_'
+label = 'Detsys TPC Coherent Noise'
+pattern = 'var10+'
 
 [output]
 path = './'
 
 [analysis]
-ordinate_sample = 'mc'
+ordinate_sample = 'onbeam'
 category_branch = 'category'
-category_assignment = [[0], [1], [2], [3], [4], [5]]
-category_labels = ['$\nu_e$ 1eNp', '$\nu_e$ CC', '$\nu_e$ NC', '$\nu_\mu$ CC', '$\nu_\mu$ NC', 'Cosmic']
-category_colors = ['C0', 'C1', 'C3', 'C4', 'C5', 'black']
-category_types = ['histogram', 'histogram', 'histogram', 'histogram', 'histogram', 'histogram']
+category_assignment = [[0], [1], [2], [3], [4], [5], [-100]]
+category_labels = ['$\nu_e$ 1eNp', '$\nu_e$ CC', '$\nu_e$ NC', '$\nu_\mu$ CC', '$\nu_\mu$ NC', 'Cosmic', 'Run 2 Data']
+category_colors = ['C0', 'C1', 'C3', 'C4', 'C5', 'black', 'black']
+category_types = ['histogram', 'histogram', 'histogram', 'histogram', 'histogram', 'histogram', 'scatter']
 
 [[figure]]
-name = 'true_edep'
+name = 'electron_electron_softmax'
 type = 'SimpleFigure' 
-style = 'selected_icarus_nue'
+style = 'basic'
 [[figure.artists]]
 type = 'SpineSpectra1D'
-yrange = [0, 35]
-variable = 'reco_visible_energy'
-draw_kwargs = {'show_component_number' = true, 'show_component_percentage' = true, 'invert_stack_order' = false}
-
+variable = 'electron_electron_softmax'
+yrange = [0, 30]
+draw_kwargs = {'show_component_number' = true, 'show_component_percentage' = true, 'invert_stack_order' = false, 'draw_error' = 'all'}

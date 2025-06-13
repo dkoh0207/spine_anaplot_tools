@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 from spectra import SpineSpectra
 from style import Style
@@ -196,6 +197,13 @@ class SpineSpectra1D(SpineSpectra):
         ax.set_ylabel('Candidates')
         ax.set_xlim(*self._variable._range if self._xrange is None else self._xrange)
         ax.set_title(self._title)
+        
+        self._covariance = None
+        self._observed_hist = None
+        self._observed_cov = None
+        self._expected_hist = None
+        self._chi2 = None
+        self._dof = None
 
         if self._plotdata is not None:
             labels, data = zip(*self._plotdata.items())
@@ -231,8 +239,10 @@ class SpineSpectra1D(SpineSpectra):
             if draw_error:
                 systs = [s[draw_error] for s in self._systematics.values() if draw_error in s]
                 cov = np.sum(s.get_covariance(self._variable._key) for s in systs)
+                self._covariance = cov
                 x = reduce(bincenters)[0]
                 y = np.sum(reduce(data), axis=0)
+                self._expected_hist = y
                 xerr = [x / 2 for x in binwidths[0]]
                 yerr = np.sqrt(np.diag(cov))
                 draw_error_boxes(ax, x, y, xerr, yerr, facecolor='gray', edgecolor='none', alpha=0.5, hatch='///')
@@ -240,6 +250,26 @@ class SpineSpectra1D(SpineSpectra):
             reduce = lambda x : [x[i] for i in scatter_mask]
             for i, label in enumerate(reduce(labels)):
                 ax.errorbar(bincenters[scatter_mask[i]], data[scatter_mask[i]], yerr=np.sqrt(data[scatter_mask[i]]), fmt='o', label=label, color=colors[scatter_mask[i]])
+                self._observed_hist = data[scatter_mask[i]]
+                self._observed_cov = np.diag(np.sqrt(data[scatter_mask[i]])**2)
+                
+        if self._covariance is not None:
+            
+            total_cov = self._covariance + self._observed_cov
+            pinv = np.linalg.pinv(total_cov)
+            self._chi2 = 0
+            self._dof = sum(np.logical_or(self._expected_hist > 0, self._observed_hist > 0))
+            for i in range(total_cov.shape[0]):
+                for j in range(total_cov.shape[1]):
+                    self._chi2 += (self._expected_hist[i] - self._observed_hist[i]) * pinv[i, j] * (self._expected_hist[j] - self._observed_hist[j])
+                
+            chi2_label = f'$\\chi^2$ / ndof = {self._chi2:.2f} / {self._dof}'
+            dummy_line = Line2D([], [], color='none')
+            ax.plot([], [], color='none', label=chi2_label)
+            # Add the chi2 entry
+            # handles.append(dummy_line)
+            # labels.append(chi2_label)
+            # ax.legend(handles, labels)
         
         if invert_stack_order:
             h, l = ax.get_legend_handles_labels()
@@ -252,7 +282,7 @@ class SpineSpectra1D(SpineSpectra):
             if draw_error:
                 h.append(plt.Rectangle((0, 0), 1, 1, fc='gray', alpha=0.5, hatch='///'))
                 l.append(systs[0].label)
-            ax.legend(h, l)
+            ax.legend(h, l, loc='best')
 
         if isinstance(self._yrange, (tuple, list)):
             ax.set_ylim(*self._yrange)
