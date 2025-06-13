@@ -516,5 +516,32 @@ namespace vars
      */
     template<class T>
         double pn_lp(const T & obj) { return std::sqrt(std::pow(vars::dpT_lp(obj), 2) + std::pow(vars::dpL_lp(obj), 2)); }
+
+    template<class T>
+        double num_primary_photons(const T & obj) {
+            std::vector<uint32_t> c(utilities::count_primaries_nue(obj));
+            return c[0];
+        }
+
+    template<class T>
+        double num_primary_electrons(const T & obj) {
+            std::vector<uint32_t> c(utilities::count_primaries_nue(obj));
+            return c[1];
+        }
+    template<class T>
+        double num_primary_muons(const T & obj) {
+            std::vector<uint32_t> c(utilities::count_primaries_nue(obj));
+            return c[2];
+        }
+    template<class T>
+        double num_primary_pions(const T & obj) {
+            std::vector<uint32_t> c(utilities::count_primaries_nue(obj));
+            return c[3];
+        }
+    template<class T>
+        double num_primary_protons(const T & obj) {
+            std::vector<uint32_t> c(utilities::count_primaries_nue(obj));
+            return c[4];
+        }
 }
 #endif // VARIABLES_H
