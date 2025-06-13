@@ -15,11 +15,23 @@
 #define BEAM_IS_NUMI false
 #define WRITE_PURITY_TREES false
 
-#define SHOWER_DEDX_CUT_VAL 3.72
-#define SHOWER_VERTEX_DISTANCE_CUT_VAL 3.27
-#define SHOWER_DIRECTIONAL_SPREAD_CUT_VAL 0.03
-#define SHOWER_AXIAL_SPREAD_CUT_VAL 0.27
-#define SHOWER_START_STRAIGHTNESS_CUT_VAL 0.82
+#define SHOWER_DEDX_CUT_VAL 5.89
+#define SHOWER_VERTEX_DISTANCE_CUT_VAL 4.95
+#define SHOWER_DIRECTIONAL_SPREAD_CUT_VAL 0.07
+#define SHOWER_AXIAL_SPREAD_CUT_VAL 0.08
+#define SHOWER_START_STRAIGHTNESS_CUT_VAL 0.52
+
+// #define SHOWER_DEDX_CUT_VAL 4.42
+// #define SHOWER_VERTEX_DISTANCE_CUT_VAL 4.62
+// #define SHOWER_DIRECTIONAL_SPREAD_CUT_VAL 0.07
+// #define SHOWER_AXIAL_SPREAD_CUT_VAL 0.11
+// #define SHOWER_START_STRAIGHTNESS_CUT_VAL 0.52
+
+// #define SHOWER_DEDX_CUT_VAL 3.72
+// #define SHOWER_VERTEX_DISTANCE_CUT_VAL 3.27
+// #define SHOWER_DIRECTIONAL_SPREAD_CUT_VAL 0.03
+// #define SHOWER_AXIAL_SPREAD_CUT_VAL 0.27
+// #define SHOWER_START_STRAIGHTNESS_CUT_VAL 0.82
 
 #include "include/mctruth.h"
 #include "include/variables.h"
@@ -48,7 +60,7 @@ int main()
      * and therefore the name of the output file, is specified as an argument
      * to the constructor.
      */
-    ana::Analysis analysis("nue2025_nominal");
+    ana::Analysis analysis("nue2025_offbeam");
 
     /**
      * @brief Add samples to the analysis.
@@ -58,12 +70,12 @@ int main()
      * the ROOT file and apply the cuts and variables. The name passed to the
      * AddLoader function is used to create a directory in the output ROOT file
      * to store the results of the analysis.
-     */
-    // ana::SpectrumLoader mc("/pnfs/icarus/scratch/users/mueller/production/simulation/nominal/flat/input*.flat.root");
-    // analysis.AddLoader("mc", &mc, true);
+     */ 
+    ana::SpectrumLoader offbeam("/pnfs/icarus/persistent/users/mueller/mixed/data/offbeam/input*.flat.root");
+    analysis.AddLoader("offbeam", &offbeam, true);
 
-    ana::SpectrumLoader nominal("/pnfs/icarus/persistent/users/mueller/mixed/simulation/nominal/input*.flat.root");
-    analysis.AddLoader("nominal", &nominal, true);
+    // ana::SpectrumLoader mc("/pnfs/icarus/persistent/users/mueller/mixed/simulation/cvext/input*.flat.root");
+    // analysis.AddLoader("mc", &mc, true);
 
     // ana::SpectrumLoader var01("/pnfs/icarus/scratch/users/mueller/production/simulation/var01/flat/input*.flat.root");
     // analysis.AddLoader("var01", &var01, true);
@@ -156,6 +168,12 @@ int main()
     vars_selected_nu.insert({"flash_total", SpineVar<RTYPE,RTYPE>(&vars::flash_total_pe, &CUT, &TCUT)});
     vars_selected_nu.insert({"flash_hypothesis", SpineVar<RTYPE,RTYPE>(&vars::flash_hypothesis, &CUT, &TCUT)});
 
+    vars_selected_nu.insert({"leading_shower_start_dedx", SpineVar<RTYPE,RTYPE>(&vars::nue::leading_shower_start_dedx, &CUT, &TCUT)});
+    vars_selected_nu.insert({"leading_shower_vertex_distance", SpineVar<RTYPE,RTYPE>(&vars::nue::leading_shower_vertex_distance, &CUT, &TCUT)});
+    vars_selected_nu.insert({"leading_shower_directional_spread", SpineVar<RTYPE,RTYPE>(&vars::nue::leading_shower_directional_spread, &CUT, &TCUT)});
+    vars_selected_nu.insert({"leading_shower_axial_spread", SpineVar<RTYPE,RTYPE>(&vars::nue::leading_shower_axial_spread, &CUT, &TCUT)});
+    vars_selected_nu.insert({"leading_shower_start_straightness", SpineVar<RTYPE,RTYPE>(&vars::nue::leading_shower_start_straightness, &CUT, &TCUT)});
+
     analysis.AddTree("selectedNu", vars_selected_nu, false);
 
     #undef TCUT
@@ -227,7 +245,7 @@ int main()
     vars_selected_cos.insert({"reco_vertex_z", SpineVar<RTYPE,RTYPE>(&vars::vertex_z, &CUT, &TCUT)});
     vars_selected_cos.insert({"electron_primary_softmax", SpineVar<RTYPEP,RTYPE,RTYPE>(&pvars::primary_softmax, &CUT, &TCUT, &utilities::leading_primary_electron_index)});
     vars_selected_cos.insert({"electron_secondary_softmax", SpineVar<RTYPEP,RTYPE,RTYPE>(&pvars::secondary_softmax, &CUT, &TCUT, &utilities::leading_primary_electron_index)});
-    vars_selected_cos.insert({"electron_electron_softmax", SpineVar<RTYPEP,RTYPE,RTYPE>(&pvars::muon_softmax, &CUT, &TCUT, &utilities::leading_primary_electron_index)});
+    vars_selected_cos.insert({"electron_electron_softmax", SpineVar<RTYPEP,RTYPE,RTYPE>(&pvars::electron_softmax, &CUT, &TCUT, &utilities::leading_primary_electron_index)});
     vars_selected_cos.insert({"proton_primary_softmax", SpineVar<RTYPEP,RTYPE,RTYPE>(&pvars::primary_softmax, &CUT, &TCUT, &utilities::leading_proton_index)});
     vars_selected_cos.insert({"proton_secondary_softmax", SpineVar<RTYPEP,RTYPE,RTYPE>(&pvars::secondary_softmax, &CUT, &TCUT, &utilities::leading_proton_index)});
     vars_selected_cos.insert({"proton_muon_softmax", SpineVar<RTYPEP,RTYPE,RTYPE>(&pvars::muon_softmax, &CUT, &TCUT, &utilities::leading_proton_index)});
@@ -238,6 +256,12 @@ int main()
     vars_selected_cos.insert({"flash_time", SpineVar<RTYPE,RTYPE>(&vars::flash_time, &CUT, &TCUT)});
     vars_selected_cos.insert({"flash_total", SpineVar<RTYPE,RTYPE>(&vars::flash_total_pe, &CUT, &TCUT)});
     vars_selected_cos.insert({"flash_hypothesis", SpineVar<RTYPE,RTYPE>(&vars::flash_hypothesis, &CUT, &TCUT)});
+
+    vars_selected_cos.insert({"leading_shower_start_dedx", SpineVar<RTYPE,RTYPE>(&vars::nue::leading_shower_start_dedx, &CUT, &TCUT)});
+    vars_selected_cos.insert({"leading_shower_vertex_distance", SpineVar<RTYPE,RTYPE>(&vars::nue::leading_shower_vertex_distance, &CUT, &TCUT)});
+    vars_selected_cos.insert({"leading_shower_directional_spread", SpineVar<RTYPE,RTYPE>(&vars::nue::leading_shower_directional_spread, &CUT, &TCUT)});
+    vars_selected_cos.insert({"leading_shower_axial_spread", SpineVar<RTYPE,RTYPE>(&vars::nue::leading_shower_axial_spread, &CUT, &TCUT)});
+    vars_selected_cos.insert({"leading_shower_start_straightness", SpineVar<RTYPE,RTYPE>(&vars::nue::leading_shower_start_straightness, &CUT, &TCUT)});
 
     analysis.AddTree("selectedCos", vars_selected_cos, false);
 
@@ -408,7 +432,7 @@ int main()
     vars_signal.insert({"true_vertex_z", SpineVar<TTYPE,TTYPE>(&vars::vertex_z, &SIGCUT, &SIGCUT)});
     vars_signal.insert({"electron_primary_softmax", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::primary_softmax, &SIGCUT, &SIGCUT, &utilities::leading_primary_electron_index)});
     vars_signal.insert({"electron_secondary_softmax", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::secondary_softmax, &SIGCUT, &SIGCUT, &utilities::leading_primary_electron_index)});
-    vars_signal.insert({"electron_electron_softmax", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::muon_softmax, &SIGCUT, &SIGCUT, &utilities::leading_primary_electron_index)});
+    vars_signal.insert({"electron_electron_softmax", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::electron_softmax, &SIGCUT, &SIGCUT, &utilities::leading_primary_electron_index)});
     vars_signal.insert({"proton_primary_softmax", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::primary_softmax, &SIGCUT, &SIGCUT, &utilities::leading_proton_index)});
     vars_signal.insert({"proton_secondary_softmax", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::secondary_softmax, &SIGCUT, &SIGCUT, &utilities::leading_proton_index)});
     vars_signal.insert({"proton_muon_softmax", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::muon_softmax, &SIGCUT, &SIGCUT, &utilities::leading_proton_index)});
@@ -416,6 +440,32 @@ int main()
     vars_signal.insert({"proton_proton_softmax", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::proton_softmax, &SIGCUT, &SIGCUT, &utilities::leading_proton_index)});
     vars_signal.insert({"proton_mip_softmax", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::mip_softmax, &SIGCUT, &SIGCUT, &utilities::leading_proton_index)});
     vars_signal.insert({"proton_hadron_softmax", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::hadron_softmax, &SIGCUT, &SIGCUT, &utilities::leading_proton_index)});
+
+    vars_signal.insert({"num_primary_photons", SpineVar<RTYPE,TTYPE>(&vars::num_primary_photons, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"num_primary_electrons", SpineVar<RTYPE,TTYPE>(&vars::num_primary_electrons, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"num_primary_muons", SpineVar<RTYPE,TTYPE>(&vars::num_primary_muons, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"num_primary_pions", SpineVar<RTYPE,TTYPE>(&vars::num_primary_pions, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"num_primary_protons", SpineVar<RTYPE,TTYPE>(&vars::num_primary_protons, &SIGCUT, &SIGCUT)});
+
+    vars_signal.insert({"reco_edep", SpineVar<RTYPE,TTYPE>(&vars::visible_energy, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"reco_telectron", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::ke, &SIGCUT, &SIGCUT, &utilities::leading_primary_electron_index)});
+    vars_signal.insert({"reco_lelectron", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::length, &SIGCUT, &SIGCUT, &utilities::leading_primary_electron_index)});
+    vars_signal.insert({"reco_tproton", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::ke, &SIGCUT, &SIGCUT, &utilities::leading_proton_index)});
+    vars_signal.insert({"reco_lproton", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::length, &SIGCUT, &SIGCUT, &utilities::leading_proton_index)});
+    vars_signal.insert({"reco_ptelectron", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::dpT, &SIGCUT, &SIGCUT, &utilities::leading_primary_electron_index)});
+    vars_signal.insert({"reco_ptproton", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::dpT, &SIGCUT, &SIGCUT, &utilities::leading_proton_index)});
+    vars_signal.insert({"reco_theta_mu", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::polar_angle, &SIGCUT, &SIGCUT, &utilities::leading_primary_electron_index)});
+    vars_signal.insert({"reco_phi_mu", SpineVar<RTYPEP,TTYPE,TTYPE>(&pvars::azimuthal_angle, &SIGCUT, &SIGCUT, &utilities::leading_primary_electron_index)});
+    vars_signal.insert({"reco_opening_angle", SpineVar<RTYPE,TTYPE>(&vars::nue::opening_angle, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"reco_dpT", SpineVar<RTYPE,TTYPE>(&vars::dpT, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"reco_dpT_lp", SpineVar<RTYPE,TTYPE>(&vars::dpT_lp, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"reco_dphiT", SpineVar<RTYPE,TTYPE>(&vars::phiT, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"reco_dalphaT", SpineVar<RTYPE,TTYPE>(&vars::alphaT, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"reco_dpL", SpineVar<RTYPE,TTYPE>(&vars::dpL, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"reco_dpL_lp", SpineVar<RTYPE,TTYPE>(&vars::dpL_lp, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"reco_pn", SpineVar<RTYPE,TTYPE>(&vars::pn, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"reco_pn_lp", SpineVar<RTYPE,TTYPE>(&vars::pn_lp, &SIGCUT, &SIGCUT)});
+
     vars_signal.insert({"fiducial_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::fiducial_cut), &SIGCUT, &SIGCUT)});
     vars_signal.insert({"containment_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::containment_cut), &SIGCUT, &SIGCUT)});
     vars_signal.insert({"flash_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::flash_cut), &SIGCUT, &SIGCUT)});
@@ -425,6 +475,13 @@ int main()
     vars_signal.insert({"directional_spread_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::nue::shower_directional_spread_cut), &SIGCUT, &SIGCUT)});
     vars_signal.insert({"axial_spread_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::nue::shower_axial_spread_cut), &SIGCUT, &SIGCUT)});
     vars_signal.insert({"start_straightness_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::nue::shower_start_straightness_cut), &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"complete_1eNp_cut", SpineVar<RTYPE,TTYPE>(WRAP_BOOL(cuts::nue::complete_1eNp_cut), &SIGCUT, &SIGCUT)});
+
+    vars_signal.insert({"leading_shower_start_dedx", SpineVar<RTYPE,TTYPE>(&vars::nue::leading_shower_start_dedx, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"leading_shower_vertex_distance", SpineVar<RTYPE,TTYPE>(&vars::nue::leading_shower_vertex_distance, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"leading_shower_directional_spread", SpineVar<RTYPE,TTYPE>(&vars::nue::leading_shower_directional_spread, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"leading_shower_axial_spread", SpineVar<RTYPE,TTYPE>(&vars::nue::leading_shower_axial_spread, &SIGCUT, &SIGCUT)});
+    vars_signal.insert({"leading_shower_start_straightness", SpineVar<RTYPE,TTYPE>(&vars::nue::leading_shower_start_straightness, &SIGCUT, &SIGCUT)});
     
     analysis.AddTree("signal", vars_signal, true);
 
